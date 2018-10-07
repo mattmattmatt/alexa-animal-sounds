@@ -65,6 +65,26 @@
                         "{animal} sound",
                         "{animal} sounds"
                     ]
+                },
+                {
+                    "name": "QuizStartIntent",
+                    "slots": [],
+                    "samples": [
+                        "start a quiz",
+                        "quiz me"
+                    ]
+                },
+                {
+                    "name": "QuizResponseIntent",
+                    "slots": [{
+                        "name": "animal",
+                        "type": "Animal"
+                    }],
+                    "samples": [
+                        "{animal}",
+                        "the answer is {animal}",
+                        "the {animal}"
+                    ]
                 }
             ]
         }

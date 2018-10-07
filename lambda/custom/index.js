@@ -11,7 +11,7 @@ const LaunchRequestHandler = {
     },
     handle(handlerInput) {
         const speechText =
-            '<speak>My kids are <break time="0.1s" /> <emphasis level="strong">animals</emphasis>!</speak>';
+            '<speak>My kids are <emphasis level="strong">animals</emphasis>!</speak>';
 
         return handlerInput.responseBuilder
             .speak(speechText)
@@ -25,7 +25,8 @@ const SoundIntentHandler = {
         return (
             handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
             handlerInput.requestEnvelope.request.intent.name === 'SoundIntent' &&
-            handlerInput.requestEnvelope.request.intent.slots.animal.resolutions
+            handlerInput.requestEnvelope.request.intent.slots.animal.resolutions &&
+            handlerInput.attributesManager.getSessionAttributes().isQuizStarted !== true
         );
     },
     handle(handlerInput) {
@@ -46,6 +47,67 @@ const SoundIntentHandler = {
 
         if (sound) {
             speechText = `<speak><emphasis level="strong"><audio src="${sound}"/></emphasis></speak>`;
+        }
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .withShouldEndSession(false)
+            .getResponse();
+    },
+};
+
+const QuizStartHandler = {
+    canHandle(handlerInput) {
+        return (
+            handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+            handlerInput.requestEnvelope.request.intent.name === 'QuizStartIntent'
+        );
+    },
+    handle(handlerInput) {
+        console.log('the envelope', JSON.stringify(handlerInput.requestEnvelope, null, 4));
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        const animal = utils.getRandomProperty(constants.sounds);
+        const sound = utils.getRandomElement(constants.sounds[animal]);
+
+        attributes.isQuizStarted = true;
+        attributes.counter = 0;
+        attributes.animal = animal;
+
+        let speechText = `<speak>Alright, let's get started! What animal makes this sound? <emphasis level="strong"><audio src="${sound}"/></emphasis></speak>`;
+
+        console.log(animal, sound, attributes);
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .withShouldEndSession(false)
+            .getResponse();
+    },
+};
+
+const QuizResponseHandler = {
+    canHandle(handlerInput) {
+        return (
+            handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+            handlerInput.requestEnvelope.request.intent.name === 'QuizResponseIntent' &&
+            handlerInput.attributesManager.getSessionAttributes().isQuizStarted === true
+        );
+    },
+    handle(handlerInput) {
+        console.log('the envelope', JSON.stringify(handlerInput.requestEnvelope, null, 4));
+        const attributes = handlerInput.attributesManager.getSessionAttributes();
+        const animalSlot = handlerInput.requestEnvelope.request.intent.slots.animal;
+        const didFindMatch =
+            animalSlot &&
+            animalSlot.resolutions &&
+            animalSlot.resolutions.resolutionsPerAuthority[0].status.code === 'ER_SUCCESS_MATCH';
+        const id =
+            didFindMatch && animalSlot.resolutions.resolutionsPerAuthority[0].values[0].value.id;
+
+        let speechText = `<speak>Sorry, that's wrong. Try again!</speak>`;
+
+        if (id === attributes.animal) {
+            speechText = `<speak>Correct!</speak>`;
+            attributes.isQuizStarted = false;
         }
 
         return handlerInput.responseBuilder
@@ -122,6 +184,8 @@ exports.handler = skillBuilder
     .addRequestHandlers(
         LaunchRequestHandler,
         SoundIntentHandler,
+        QuizStartHandler,
+        QuizResponseHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
         SessionEndedRequestHandler
