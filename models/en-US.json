@@ -1,0 +1,72 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "my kids are animals",
+            "types": [{
+                "name": "Animal",
+                "values": [
+                    {
+                        "id": "cat",
+                        "name": {
+                            "value": "cat",
+                            "synonyms": [
+                                "kitty",
+                                "kitten"
+                            ]
+                        }
+                    },
+                    {
+                        "id": "bear",
+                        "name": {
+                            "value": "bear",
+                            "synonyms": [
+                                "teddy",
+                                "grizzly"
+                            ]
+                        }
+                    },
+                    {
+                        "id": "bird",
+                        "name": {
+                            "value": "bird",
+                            "synonyms": [
+                                "birdy"
+                            ]
+                        }
+                    }
+                ]
+            }],
+            "intents": [{
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "SoundIntent",
+                    "slots": [{
+                        "name": "animal",
+                        "type": "Animal"
+                    }],
+                    "samples": [
+                        "what does {animal} sound like",
+                        "what sound does the {animal} do",
+                        "what sound does the {animal} make",
+                        "how does the {animal} do",
+                        "how does the {animal} sound",
+                        "do like the {animal}",
+                        "i want to hear {animal}",
+                        "{animal} sound",
+                        "{animal} sounds"
+                    ]
+                }
+            ]
+        }
+    }
+}

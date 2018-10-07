@@ -1,0 +1,44 @@
+{
+    "name": "alexa-animal-sounds",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "eslint": "^5.6.1",
+        "eslint-plugin-prettier": "^3.0.0",
+        "prettier": "^1.14.3"
+    },
+    "eslintConfig": {
+        "env": {
+            "node": true
+        },
+        "parserOptions": {
+            "ecmaVersion": 6,
+            "sourceType": "module",
+            "allowImportExportEverywhere": true,
+            "ecmaFeatures": {
+                "experimentalObjectRestSpread": true
+            }
+        },
+        "plugins": [
+            "prettier"
+        ],
+        "rules": {
+            "prettier/prettier": [
+                "error",
+                {
+                    "singleQuote": true,
+                    "trailingComma": "es5",
+                    "bracketSpacing": true,
+                    "tabWidth": 4,
+                    "printWidth": 100
+                }
+            ]
+        }
+    }
+}
