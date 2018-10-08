@@ -71,7 +71,8 @@ const QuizStartHandler = {
         const sound = utils.getRandomSoundForAnimal(animal);
 
         attributes.isQuizStarted = true;
-        attributes.counter = 0;
+        attributes.quizRound = 1;
+        attributes.quizMistakes = 0;
         attributes.animal = animal;
 
         let speechText = `<speak>Alright, let's get started! What animal makes this sound? <emphasis level="strong"><audio src="${sound}"/></emphasis></speak>`;
@@ -113,27 +114,41 @@ const QuizResponseHandler = {
             animalSlot.resolutions.resolutionsPerAuthority[0].status.code === 'ER_SUCCESS_MATCH';
         const id =
             didFindMatch && animalSlot.resolutions.resolutionsPerAuthority[0].values[0].value.id;
+        let shouldEndSession = false;
 
         if (id === attributes.animal) {
             speech.say(`Correct!`);
 
-            if (attributes.counter >= 3) {
+            if (attributes.quizRound >= 3) {
                 attributes.isQuizStarted = false;
                 speech
                     .pause('1s')
                     .say(`That's enough fun for today. Thanks for playing, see you soon!`);
+                shouldEndSession = true;
             } else {
                 const nextQuiz = getQuizQuestion(speech);
                 attributes.animal = nextQuiz.animal;
-                attributes.counter = attributes.counter + 1;
+                attributes.quizRound++;
             }
         } else {
-            speech.say(`Sorry, that's wrong. Try again!`);
+            attributes.quizMistakes++;
+            if (attributes.quizMistakes < 3) {
+                speech.say(`Sorry, that's wrong. Try again!`);
+            } else {
+                speech
+                    .say(`Sorry, still not correct. What you heard was a ${attributes.animal}.`)
+                    .pause('0.5s');
+
+                const nextQuiz = getQuizQuestion(speech);
+                attributes.animal = nextQuiz.animal;
+                attributes.quizMistakes = 0;
+                attributes.quizRound++;
+            }
         }
 
         return handlerInput.responseBuilder
             .speak(speech.ssml())
-            .withShouldEndSession(false)
+            .withShouldEndSession(shouldEndSession)
             .getResponse();
     },
 };
