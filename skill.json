@@ -1,30 +1,47 @@
 {
-  "manifest": {
-    "publishingInformation": {
-      "locales": {
-        "en-US": {
-          "summary": "Ask Alexa what sound your favorite animal makes, and get quizzed about animal sounds you've never heard before.",
-          "examplePhrases": [
-            "Alexa, what does the bear sound like?",
-            "Alexa, quiz me animal sounds!",
-            "Alexa, what sound does a cat make?"
-          ],
-          "name": "My Kids Are Animals",
-          "description": ""
+    "manifest": {
+        "publishingInformation": {
+            "locales": {
+                "en-US": {
+                    "summary": "Ask Alexa what sound your favorite animal makes, and get quizzed about animal sounds you've never heard before.",
+                    "examplePhrases": [
+                        "Alexa, what does the bear sound like?",
+                        "Alexa, quiz me animal sounds!",
+                        "Alexa, what sound does a cat make?"
+                    ],
+                    "keywords": [
+                        "animals",
+                        "sounds",
+                        "quiz",
+                        "animal",
+                        "sound",
+                        "bear"
+                    ],
+                    "name": "My Kids Are Animals!",
+                    "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/70ca/31507aceb5934d72a053036232f3054f/APP_ICON?versionId=.1sZB.LSxIZ4p8_Gn8Nd02vi5svSdf3T&AWSAccessKeyId=AKIAJFEYRBGIHK2BBYKA&Expires=1539063539&Signature=1%2B%2FDqPJu3%2FGzV%2FKcXa0XyJP71Bs%3D",
+                    "description": "Turn your kids into animals! \n\nOpen the skill saying \"Alexa, open My Kids Are Animals\" and choose to hear animal sounds or get quizzed. \n\nYou can say \"What sound does the dog make?\" and Alexa will answer, or you can start a quiz with \"Quiz me\".",
+                    "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/ff7c/083f8fc9e0fe42c5a62a4d565a6eff25/APP_ICON_LARGE?versionId=NAHrVZR3nlXu4VsF3ixSSqOGZQJ2N60_&AWSAccessKeyId=AKIAJFEYRBGIHK2BBYKA&Expires=1539063539&Signature=jYM3ZF6wZjXja%2B6VnIhMMhg8rzY%3D"
+                }
+            },
+            "isAvailableWorldwide": true,
+            "testingInstructions": "Sample Testing Instructions.",
+            "category": "EDUCATION_AND_REFERENCE",
+            "distributionCountries": []
+        },
+        "apis": {
+            "custom": {
+                "endpoint": {
+                    "sourceDir": "lambda/custom"
+                }
+            }
+        },
+        "manifestVersion": "1.0",
+        "privacyAndCompliance": {
+            "allowsPurchases": false,
+            "isExportCompliant": true,
+            "containsAds": false,
+            "isChildDirected": false,
+            "usesPersonalInfo": false
         }
-      },
-      "isAvailableWorldwide": true,
-      "testingInstructions": "Sample Testing Instructions.",
-      "category": "EDUCATION_AND_REFERENCE",
-      "distributionCountries": []
-    },
-    "apis": {
-      "custom": {
-        "endpoint": {
-          "sourceDir": "lambda/custom"
-        }
-      }
-    },
-    "manifestVersion": "1.0"
-  }
+    }
 }

@@ -4,6 +4,7 @@
 const Alexa = require('ask-sdk-core');
 const constants = require('./constants');
 const utils = require('./utils');
+const Speech = require('ssml-builder/amazon_speech'); // https://www.npmjs.com/package/ssml-builder#amazon-ssml-specific-tags
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -66,8 +67,8 @@ const QuizStartHandler = {
     handle(handlerInput) {
         console.log('the envelope', JSON.stringify(handlerInput.requestEnvelope, null, 4));
         const attributes = handlerInput.attributesManager.getSessionAttributes();
-        const animal = utils.getRandomProperty(constants.sounds);
-        const sound = utils.getRandomElement(constants.sounds[animal]);
+        const animal = utils.getRandomAnimal();
+        const sound = utils.getRandomSoundForAnimal(animal);
 
         attributes.isQuizStarted = true;
         attributes.counter = 0;
@@ -84,6 +85,15 @@ const QuizStartHandler = {
     },
 };
 
+const getQuizQuestion = speech => {
+    const animal = utils.getRandomAnimal();
+    const sound = utils.getRandomSoundForAnimal(animal);
+    return {
+        animal,
+        text: speech.say('What animal makes this sound?').audio(sound),
+    };
+};
+
 const QuizResponseHandler = {
     canHandle(handlerInput) {
         return (
@@ -94,6 +104,7 @@ const QuizResponseHandler = {
     },
     handle(handlerInput) {
         console.log('the envelope', JSON.stringify(handlerInput.requestEnvelope, null, 4));
+        const speech = new Speech();
         const attributes = handlerInput.attributesManager.getSessionAttributes();
         const animalSlot = handlerInput.requestEnvelope.request.intent.slots.animal;
         const didFindMatch =
@@ -103,15 +114,25 @@ const QuizResponseHandler = {
         const id =
             didFindMatch && animalSlot.resolutions.resolutionsPerAuthority[0].values[0].value.id;
 
-        let speechText = `<speak>Sorry, that's wrong. Try again!</speak>`;
-
         if (id === attributes.animal) {
-            speechText = `<speak>Correct!</speak>`;
-            attributes.isQuizStarted = false;
+            speech.say(`Correct!`);
+
+            if (attributes.counter >= 3) {
+                attributes.isQuizStarted = false;
+                speech
+                    .pause('1s')
+                    .say(`That's enough fun for today. Thanks for playing, see you soon!`);
+            } else {
+                const nextQuiz = getQuizQuestion(speech);
+                attributes.animal = nextQuiz.animal;
+                attributes.counter = attributes.counter + 1;
+            }
+        } else {
+            speech.say(`Sorry, that's wrong. Try again!`);
         }
 
         return handlerInput.responseBuilder
-            .speak(speechText)
+            .speak(speech.ssml())
             .withShouldEndSession(false)
             .getResponse();
     },

@@ -4,8 +4,7 @@
             "invocationName": "my kids are animals",
             "types": [{
                 "name": "Animal",
-                "values": [
-                    {
+                "values": [{
                         "id": "cat",
                         "name": {
                             "value": "cat",
@@ -32,6 +31,97 @@
                             "synonyms": [
                                 "birdy"
                             ]
+                        }
+                    },
+                    {
+                        "id": "chicken",
+                        "name": {
+                            "value": "chicken",
+                            "synonyms": []
+                        }
+                    },
+                    {
+                        "id": "crow",
+                        "name": {
+                            "value": "crow",
+                            "synonyms": []
+                        }
+                    },
+                    {
+                        "id": "dog",
+                        "name": {
+                            "value": "dog",
+                            "synonyms": ["doggy", "puppy", "pups", "canine"]
+                        }
+                    },
+                    {
+                        "id": "elephant",
+                        "name": {
+                            "value": "elephant",
+                            "synonyms": []
+                        }
+                    },
+                    {
+                        "id": "horse",
+                        "name": {
+                            "value": "horse",
+                            "synonyms": ["horsey"]
+                        }
+                    },
+                    {
+                        "id": "lion",
+                        "name": {
+                            "value": "lion",
+                            "synonyms": []
+                        }
+                    },
+                    {
+                        "id": "monkey",
+                        "name": {
+                            "value": "monkey",
+                            "synonyms": ["ape"]
+                        }
+                    },
+                    {
+                        "id": "rat",
+                        "name": {
+                            "value": "rat",
+                            "synonyms": ["mouse"]
+                        }
+                    },
+                    {
+                        "id": "raven",
+                        "name": {
+                            "value": "raven",
+                            "synonyms": []
+                        }
+                    },
+                    {
+                        "id": "rooster",
+                        "name": {
+                            "value": "rooster",
+                            "synonyms": ["cock"]
+                        }
+                    },
+                    {
+                        "id": "sheep",
+                        "name": {
+                            "value": "sheep",
+                            "synonyms": ["lamb"]
+                        }
+                    },
+                    {
+                        "id": "turkey",
+                        "name": {
+                            "value": "turkey",
+                            "synonyms": []
+                        }
+                    },
+                    {
+                        "id": "wolf",
+                        "name": {
+                            "value": "wolf",
+                            "synonyms": []
                         }
                     }
                 ]
