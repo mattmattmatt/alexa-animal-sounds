@@ -10,7 +10,8 @@
                             "value": "cat",
                             "synonyms": [
                                 "kitty",
-                                "kitten"
+                                "kitten",
+                                "cats"
                             ]
                         }
                     },
@@ -72,21 +73,21 @@
                         "id": "lion",
                         "name": {
                             "value": "lion",
-                            "synonyms": []
+                            "synonyms": ["tiger"]
                         }
                     },
                     {
                         "id": "monkey",
                         "name": {
                             "value": "monkey",
-                            "synonyms": ["ape"]
+                            "synonyms": ["ape", "chimpanzee"]
                         }
                     },
                     {
                         "id": "rat",
                         "name": {
                             "value": "rat",
-                            "synonyms": ["mouse"]
+                            "synonyms": ["mouse", "mice"]
                         }
                     },
                     {
@@ -121,7 +122,7 @@
                         "id": "wolf",
                         "name": {
                             "value": "wolf",
-                            "synonyms": []
+                            "synonyms": ["wolves"]
                         }
                     }
                 ]
@@ -161,7 +162,9 @@
                     "slots": [],
                     "samples": [
                         "start a quiz",
-                        "quiz me"
+                        "quiz me",
+                        "quiz me animal sounds",
+                        "animal quiz"
                     ]
                 },
                 {
@@ -173,7 +176,10 @@
                     "samples": [
                         "{animal}",
                         "the answer is {animal}",
-                        "the {animal}"
+                        "the {animal}",
+                        "that was a {animal}",
+                        "i think that was a {animal}",
+                        "maybe {animal}"
                     ]
                 }
             ]

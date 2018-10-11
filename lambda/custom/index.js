@@ -3,6 +3,7 @@
 
 const Alexa = require('ask-sdk-core');
 const constants = require('./constants');
+const locales = require('./locales');
 const utils = require('./utils');
 const Speech = require('ssml-builder/amazon_speech'); // https://www.npmjs.com/package/ssml-builder#amazon-ssml-specific-tags
 
@@ -11,12 +12,15 @@ const LaunchRequestHandler = {
         return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speechText =
-            '<speak>My kids are <emphasis level="strong">animals</emphasis>!</speak>';
+        const welcome = new Speech();
+        const reprompt = new Speech();
+
+        welcome.say(locales.title);
+        reprompt.say(locales.help);
 
         return handlerInput.responseBuilder
-            .speak(speechText)
-            .reprompt(speechText)
+            .speak(welcome.ssml())
+            .reprompt(reprompt.ssml())
             .getResponse();
     },
 };
@@ -41,17 +45,18 @@ const SoundIntentHandler = {
         const id =
             didFindMatch && animalSlot.resolutions.resolutionsPerAuthority[0].values[0].value.id;
         const sound = id && utils.getRandomElement(constants.sounds[id]);
-
-        let speechText = `<speak>I don't know what ${animalSlot.value} sounds like.</speak>`;
+        const speech = new Speech();
 
         console.log(id, constants.sounds[id], sound);
 
         if (sound) {
-            speechText = `<speak><emphasis level="strong"><audio src="${sound}"/></emphasis></speak>`;
+            speech.audio(sound);
+        } else {
+            speech.say(locales.soundNotFound(animalSlot.value));
         }
 
         return handlerInput.responseBuilder
-            .speak(speechText)
+            .speak(speech.ssml())
             .withShouldEndSession(false)
             .getResponse();
     },
@@ -67,31 +72,48 @@ const QuizStartHandler = {
     handle(handlerInput) {
         console.log('the envelope', JSON.stringify(handlerInput.requestEnvelope, null, 4));
         const attributes = handlerInput.attributesManager.getSessionAttributes();
-        const animal = utils.getRandomAnimal();
-        const sound = utils.getRandomSoundForAnimal(animal);
+        const speech = new Speech();
+        const reprompt = new Speech();
 
+        speech.say(utils.getRandomElement(locales.quizStart)).pause('0.5s');
+
+        const nextQuiz = getQuizQuestion(speech);
+        reprompt.say(utils.getRandomElement(locales.quizWhatAnimalReprompt));
+
+        attributes.animal = nextQuiz.animal;
+        attributes.sound = nextQuiz.sound;
         attributes.isQuizStarted = true;
         attributes.quizRound = 1;
         attributes.quizMistakes = 0;
-        attributes.animal = animal;
 
-        let speechText = `<speak>Alright, let's get started! What animal makes this sound? <emphasis level="strong"><audio src="${sound}"/></emphasis></speak>`;
-
-        console.log(animal, sound, attributes);
+        console.log(
+            'attributes',
+            JSON.stringify(attributes, null, 4),
+            'speech',
+            speech.ssml(),
+            'reprompt',
+            reprompt.ssml()
+        );
 
         return handlerInput.responseBuilder
-            .speak(speechText)
+            .speak(speech.ssml())
+            .reprompt(reprompt.ssml())
             .withShouldEndSession(false)
             .getResponse();
     },
 };
 
-const getQuizQuestion = speech => {
-    const animal = utils.getRandomAnimal();
-    const sound = utils.getRandomSoundForAnimal(animal);
+const getQuizQuestion = (
+    speech,
+    animal = utils.getRandomAnimal(),
+    sound = utils.getRandomSoundForAnimal(animal)
+) => {
+    const text = utils.getRandomElement(locales.quizWhatAnimal);
+    speech.say(text).audio(sound);
     return {
         animal,
-        text: speech.say('What animal makes this sound?').audio(sound),
+        text,
+        sound,
     };
 };
 
@@ -106,6 +128,7 @@ const QuizResponseHandler = {
     handle(handlerInput) {
         console.log('the envelope', JSON.stringify(handlerInput.requestEnvelope, null, 4));
         const speech = new Speech();
+        const reprompt = new Speech();
         const attributes = handlerInput.attributesManager.getSessionAttributes();
         const animalSlot = handlerInput.requestEnvelope.request.intent.slots.animal;
         const didFindMatch =
@@ -117,37 +140,59 @@ const QuizResponseHandler = {
         let shouldEndSession = false;
 
         if (id === attributes.animal) {
-            speech.say(`Correct!`);
+            speech.say(utils.getRandomElement(locales.quizCorrect));
 
-            if (attributes.quizRound >= 3) {
+            if (attributes.quizRound >= constants.maxQuizRounds) {
                 attributes.isQuizStarted = false;
-                speech
-                    .pause('1s')
-                    .say(`That's enough fun for today. Thanks for playing, see you soon!`);
+                speech.pause('1.5s').say(utils.getRandomElement(locales.quizNoMoreQuestions));
                 shouldEndSession = true;
             } else {
+                speech
+                    .pause('0.5s')
+                    .say(utils.getRandomElement(locales.quizNextQuestion))
+                    .pause('0.2s');
                 const nextQuiz = getQuizQuestion(speech);
+                reprompt.say(utils.getRandomElement(locales.quizWhatAnimalReprompt));
                 attributes.animal = nextQuiz.animal;
+                attributes.sound = nextQuiz.sound;
                 attributes.quizRound++;
             }
         } else {
             attributes.quizMistakes++;
             if (attributes.quizMistakes < 3) {
-                speech.say(`Sorry, that's wrong. Try again!`);
+                speech.say(utils.getRandomElement(locales.quizWrongAnswerTryAgain));
+                reprompt.say(utils.getRandomElement(locales.quizWrongAnswerTryAgainReprompt));
             } else {
                 speech
-                    .say(`Sorry, still not correct. What you heard was a ${attributes.animal}.`)
-                    .pause('0.5s');
+                    .say(
+                        utils.getRandomElement(
+                            locales.quizWrongAnswerSaySolution(attributes.animal)
+                        )
+                    )
+                    .pause('0.8s')
+                    .say(utils.getRandomElement(locales.quizNextQuestion))
+                    .pause('0.2s');
 
                 const nextQuiz = getQuizQuestion(speech);
                 attributes.animal = nextQuiz.animal;
+                attributes.sound = nextQuiz.sound;
                 attributes.quizMistakes = 0;
                 attributes.quizRound++;
             }
         }
 
+        console.log(
+            'attributes',
+            JSON.stringify(attributes, null, 4),
+            'speech',
+            speech.ssml(),
+            'reprompt',
+            reprompt.ssml()
+        );
+
         return handlerInput.responseBuilder
             .speak(speech.ssml())
+            .reprompt(reprompt.ssml())
             .withShouldEndSession(shouldEndSession)
             .getResponse();
     },
@@ -161,12 +206,12 @@ const HelpIntentHandler = {
         );
     },
     handle(handlerInput) {
-        const speechText = 'You can say hello to me!';
+        const speech = new Speech();
+        speech.say(locales.help);
 
         return handlerInput.responseBuilder
-            .speak(speechText)
-            .reprompt(speechText)
-            .withSimpleCard('Hello World', speechText)
+            .speak(speech.ssml())
+            .reprompt(speech.ssml())
             .getResponse();
     },
 };
@@ -182,10 +227,7 @@ const CancelAndStopIntentHandler = {
     handle(handlerInput) {
         const speechText = 'Goodbye!';
 
-        return handlerInput.responseBuilder
-            .speak(speechText)
-            .withSimpleCard('Hello World', speechText)
-            .getResponse();
+        return handlerInput.responseBuilder.speak(speechText).getResponse();
     },
 };
 

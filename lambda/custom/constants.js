@@ -1,4 +1,5 @@
 module.exports = {
+    maxQuizRounds: 5,
     sounds: {
         cat: [
             'soundbank://soundlibrary/animals/amzn_sfx_cat_angry_meow_1x_01',
