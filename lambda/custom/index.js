@@ -15,7 +15,10 @@ const LaunchRequestHandler = {
         const welcome = new Speech();
         const reprompt = new Speech();
 
-        welcome.say(locales.title);
+        welcome
+            .say(locales.title)
+            .pause('0.5s')
+            .say(locales.titleHelp);
         reprompt.say(locales.help);
 
         return handlerInput.responseBuilder
@@ -57,7 +60,7 @@ const SoundIntentHandler = {
 
         return handlerInput.responseBuilder
             .speak(speech.ssml())
-            .withShouldEndSession(false)
+            .withShouldEndSession(true)
             .getResponse();
     },
 };

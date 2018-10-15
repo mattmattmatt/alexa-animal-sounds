@@ -1,5 +1,6 @@
 module.exports = {
     title: 'My kids are animals!',
+    titleHelp: 'Say "Quiz me", or "What does a bear sound like?".',
     help:
         'You can say "Quiz me" to start a quiz. Or you can say "What does a bear sound like", and you will hear its roar.',
     soundNotFound: animal => `I don't know what ${animal} sounds like.`,
